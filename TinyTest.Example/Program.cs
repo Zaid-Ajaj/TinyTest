@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using TinyTest;
 
 namespace TinyTest.UI
@@ -11,8 +12,8 @@ namespace TinyTest.UI
         {
             Test.Case("Add(x, y) works", () =>
             {
-                var result = Add(1, Add(2, Add(3, Add(4, 5))));
-                Test.Equal(result, 15);
+                var result = Add(1, Add(2, 3));
+                Test.Equal(result, 6);
             });
 
             Test.CaseAsync("Async tests too!", async () =>
@@ -20,6 +21,8 @@ namespace TinyTest.UI
                 await Task.Delay(1000);
                 Test.Equal(1, 1);
             });
+
+            Test.Report();
         }
     }
 }
