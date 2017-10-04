@@ -7,24 +7,28 @@ Tiny single file test "framework" for small projects because you don't always ne
  - Start writing tests
  
  ```csharp
-static int Add(int x, int y) => x + y;
+using TinyTest;
 
-static void Main(string[] args)
+class Program
 {
-    Test.Case("Add(x, y) works", () =>
-    {
-        var result = Add(1, Add(2, Add(3, Add(4, 5))));
-        Test.Equal(result, 15);
-    });
+    static int Add(int x, int y) => x + y;
 
-    Test.CaseAsync("Async tests too!", async () =>
+    static void Main(string[] args)
     {
-        await Task.Delay(1000);
-        Test.Equal(1, 1);
-    });
+        Test.Case("Add(x, y) works", () =>
+        {
+            var result = Add(1, Add(2, 3));
+            Test.Equal(result, 6);
+        });
 
-    // put at the end, call once
-    Test.Report();
+        Test.CaseAsync("Async tests too!", async () =>
+        {
+            await Task.Delay(1000);
+            Test.Equal(1, 1);
+        });
+
+        Test.Report();
+    }
 }
 ```
 ## Grouping tests
