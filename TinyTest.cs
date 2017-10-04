@@ -79,6 +79,7 @@ namespace TinyTest
             Console.WriteLine(msg);
             Console.ResetColor();
         }
+
         public void Report(IEnumerable<TestModule> modules)
         {
             var defaultOnly = modules.Count() == 1 && modules.First().IsDefault;
@@ -108,16 +109,6 @@ namespace TinyTest
             {
 
             }
-        }
-
-
-        class TestPassException : Exception
-        {
-            public TestPassException() { }
-            public TestPassException(string msg) : base(msg)
-            {
-
-            } 
         }
 
         public static void Module(string name)
@@ -237,9 +228,6 @@ namespace TinyTest
             {
                 var task = handler();
                 task.Wait();
-            }
-            catch (TestPassException)
-            {
                 testResult.Result = TestResult.Succeeded;
             }
             catch (TestFailureException)
