@@ -15,15 +15,17 @@ class Program
 
     static int Main(string[] args)
     {
+        Test.Module("Simple Tests");
+
         Test.Case("Add(x, y) works", () =>
         {
-            var result = Add(1, Add(2, 3));
-            Test.Equal(result, 6);
+            var result = Enumerable.Range(1, 100).Aggregate(Add);
+            Test.Equal(result, 5050);
         });
 
         Test.CaseAsync("Async tests too!", async () =>
         {
-            await Task.Delay(1000);
+            await Task.Delay(200);
             Test.Equal(1, 1);
         });
 
@@ -31,6 +33,11 @@ class Program
     }
 }
 ```
+Test Results:
+
+![ScreenShot](screenshot.png)
+
+
 ## Grouping tests
 You can group tests using modules:
 ```csharp

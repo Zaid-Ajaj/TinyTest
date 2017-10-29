@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Console;
 
 namespace TinyTest
 {
@@ -42,64 +43,94 @@ namespace TinyTest
                 var indentation = indent ? "    " : "";
                 if (test.Result == TestResult.Succeeded)
                 {
-                    SuccessLog($"{test.Name} | Passed in {test.RunTime} ms");
+                    SuccessLog(test.Name, test.RunTime);
                 }
 
                 if (test.Result == TestResult.Errored)
                 {
                     testResult = 1;
                     var ex = test.Exception;
-                    ErrorLog($"{test.Name} | Errored in {test.RunTime} ms");
-                    Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
-                    Console.WriteLine(ex.StackTrace);
+                    ErrorLog(test.Name, test.RunTime);
+                    WriteLine($"{ex.GetType().Name}: {ex.Message}");
+                    WriteLine(ex.StackTrace);
                 }
 
                 if (test.Result == TestResult.Failed)
                 {
                     testResult = 1;
-                    FailLog($"{test.Name} | Failed in {test.RunTime} ms");
+                    FailLog(test.Name, test.RunTime);
                 }
             }
         }
 
-        private static void ErrorLog(string msg)
+        private static void ErrorLog(string msg, long runtime)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(msg);
-            Console.ResetColor();
+            Write($"   | --- {msg}");
+            Write($" | ");
+            ForegroundColor = ConsoleColor.Red;
+            Write("Errored");
+            ResetColor();
+            Write(" in ");
+            ForegroundColor = ConsoleColor.Cyan;
+            Write(runtime);
+            ResetColor();
+            Write(" ms");
+            Write(Environment.NewLine);
         }
 
-        private static void SuccessLog(string msg)
+        private static void SuccessLog(string msg, long runtime)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(msg);
-            Console.ResetColor();
+            Write($"   | --- {msg}");
+            Write($" | ");
+            ForegroundColor = ConsoleColor.Green;
+            Write("Passed");
+            ResetColor();
+            Write(" in ");
+            ForegroundColor = ConsoleColor.Cyan;
+            Write(runtime);
+            ResetColor();
+            Write(" ms");
+            Write(Environment.NewLine);
         }
 
-        private static void FailLog(string msg)
+        private static void FailLog(string msg, long runtime)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(msg);
-            Console.ResetColor();
+            Write($"   | --- {msg}");
+            Write($" | ");
+            ForegroundColor = ConsoleColor.Yellow;
+            Write("Failed");
+            ResetColor();
+            Write(" in ");
+            ForegroundColor = ConsoleColor.Cyan;
+            Write(runtime);
+            ResetColor();
+            Write(" ms");
+            Write(Environment.NewLine);
         }
 
         public int Report(IEnumerable<TestModule> modules)
         {
+            Console.InputEncoding = System.Text.Encoding.Unicode;
             var defaultOnly = modules.Count() == 1 && modules.First().IsDefault;
 
             if (defaultOnly)
             {
                 var defaultModule = modules.First();
+                WriteLine($" Module: Default");
+                WriteLine("   |");
                 LogTests(defaultModule.Tests);
+                WriteLine();
                 return testResult;
             }
 
             foreach (var module in modules)
             {
-                Console.WriteLine($"Module: {module.Name}");
+                WriteLine($" Module: {module.Name}");
+                WriteLine("   |");
                 LogTests(module.Tests, true);
-                Console.WriteLine();
+                WriteLine();
             }
+
 
             return testResult;
         }
