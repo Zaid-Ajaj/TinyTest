@@ -13,7 +13,7 @@ class Program
 {
     static int Add(int x, int y) => x + y;
 
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
         Test.Case("Add(x, y) works", () =>
         {
@@ -27,7 +27,7 @@ class Program
             Test.Equal(1, 1);
         });
 
-        Test.Report();
+        return Test.Report();
     }
 }
 ```
