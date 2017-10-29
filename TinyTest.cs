@@ -28,12 +28,13 @@ namespace TinyTest
 
     public interface ITestReporter
     {
-        void Report(IEnumerable<TestModule> modules); 
+        int Report(IEnumerable<TestModule> modules); 
     }
 
 
     public class ConsoleReporter : ITestReporter
     {
+        private int testResult = 0;
         private void LogTests(IEnumerable<TestDefinition> tests, bool indent = false)
         {
             foreach (var test in tests)
@@ -46,6 +47,7 @@ namespace TinyTest
 
                 if (test.Result == TestResult.Errored)
                 {
+                    testResult = 1;
                     var ex = test.Exception;
                     ErrorLog($"{test.Name} | Errored in {test.RunTime} ms");
                     Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
@@ -54,6 +56,7 @@ namespace TinyTest
 
                 if (test.Result == TestResult.Failed)
                 {
+                    testResult = 1;
                     FailLog($"{test.Name} | Failed in {test.RunTime} ms");
                 }
             }
@@ -80,7 +83,7 @@ namespace TinyTest
             Console.ResetColor();
         }
 
-        public void Report(IEnumerable<TestModule> modules)
+        public int Report(IEnumerable<TestModule> modules)
         {
             var defaultOnly = modules.Count() == 1 && modules.First().IsDefault;
 
@@ -88,7 +91,7 @@ namespace TinyTest
             {
                 var defaultModule = modules.First();
                 LogTests(defaultModule.Tests);
-                return;
+                return testResult;
             }
 
             foreach (var module in modules)
@@ -97,6 +100,8 @@ namespace TinyTest
                 LogTests(module.Tests, true);
                 Console.WriteLine();
             }
+
+            return testResult;
         }
     }
 
@@ -152,15 +157,9 @@ namespace TinyTest
 
         };
 
-        public static void ReportUsing(ITestReporter reporter)
-        {
-            reporter.Report(testModules);
-        }
+        public static int ReportUsing(ITestReporter reporter) => reporter.Report(testModules);
 
-        public static void Report()
-        {
-            ReportUsing(new ConsoleReporter());
-        }
+        public static int Report() => ReportUsing(new ConsoleReporter());
 
         public static void Fail(string msg = "")
         {
@@ -180,6 +179,26 @@ namespace TinyTest
             } 
         }
 
+        public static void ArraysEqual<T>(IEnumerable<T> xs, IEnumerable<T> ys) where T : IEquatable<T>
+        {
+            if (xs == null && ys == null) { return; } // both null is OK
+
+            var x = xs.ToArray();
+            var y = ys.ToArray();
+              
+            if (x.Length != y.Length)
+            {
+                Fail();
+            }
+
+            for(var i = 0; i < x.Length; i++)
+            {
+                if (!x[i].Equals(y[i]))
+                {
+                    Fail();
+                }
+            }
+        }
 
         public static void OnError(Action<string, Exception> handler)
         {
